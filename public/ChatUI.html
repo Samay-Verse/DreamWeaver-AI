@@ -3,164 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced DreamWeaver Chat</title>
-    <link rel="stylesheet" href="css/ChatBot.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dream Weaver Clone with Simple Chat UI</title>
+    <link rel="stylesheet" href="css/ChatUI.css">
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-text">
-                <h1>DreamWeaver</h1>
-            </div>
+    <!-- Hamburger Menu Button -->
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigation">
+        <div class="logo" aria-label="App Logo">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L14 10L22 12L14 14L12 22L10 14L2 12L10 10L12 2Z" fill="#4CAF50" stroke="#4CAF50" />
+                <path d="M5 3L5.5 5L7 5.5L5.5 6L5 8L4.5 6L3 5.5L4.5 5L5 3Z" fill="#81C784" stroke="#4CAF50" />
+                <path d="M17 16L17.3 17.5L18.5 18L17.3 18.5L17 20L16.7 18.5L15.5 18L16.7 17.5L17 16Z" fill="#81C784"
+                    stroke="#4CAF50" />
+            </svg>
         </div>
 
-        <button class="new-chat-btn" id="new-chat-btn">
-            <i class="fas fa-plus"></i> New DreamWeaver
+        <button class="add-btn" id="add-btn" aria-label="Add new item">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#ffffff" stroke-width="2" fill="none">
+                <path d="M12 5v14M5 12h14" />
+            </svg>
         </button>
 
-        <div class="nav-section">
-            <div class="nav-title">Tools</div>
-            <div class="nav-item" id="dream-visualizer-btn"><i class="fas fa-star"></i> Dream Visualizer</div>
-            <div class="nav-item" id="happy-vault-btn"><i class="fas fa-heart"></i> Happy Vault</div>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-title">Resources</div>
-            <div class="nav-item" id="self-care-tips-btn"><i class="fas fa-spa"></i> Self-Care Tips</div>
-            <div class="nav-item" id="gratitude-journal-btn"><i class="fas fa-book"></i> Gratitude Journal</div>
-            <div class="nav-item" id="sleep-help-btn"><i class="fas fa-moon"></i> Sleep Help</div>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-title">Recent Dreams</div>
-            <div id="chat-history-container"></div>
-        </div>
-
-        <div class="disclaimer">
-            <p>DreamWeaver-powered chat. For professional help, contact a specialist.</p>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="chat-header">
-            <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
-            <h2>DreamWeaver</h2>
-            <div class="account-container">
-                <button class="account-btn">
-                    <div class="account-avatar"></div>
-                </button>
-                <div class="account-dropdown">
-                    <div class="account-dropdown-header">
-                        <div class="account-dropdown-avatar"></div>
-                        <div class="account-dropdown-info">
-                            <p>User Account</p>
-                            <p>Manage your account settings</p>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="home" aria-label="Home">
+                        <div class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                            </svg>
                         </div>
-                    </div>
-                    <div class="account-item"><i class="fas fa-user"></i> Profile</div>
-                    <div class="account-item"><i class="fas fa-cog"></i> Settings</div>
-                    <div class="account-item"><i class="fas fa-bell"></i> Notifications</div>
-                    <div class="account-item"><i class="fas fa-shield-alt"></i> Privacy</div>
-                    <div class="account-item"><i class="fas fa-question-circle"></i> Help & Support</div>
-                    <div class="account-item" data-action="login"><i class="fas fa-sign-in-alt"></i> Login</div>
-                    <div class="account-item"><i class="fas fa-sign-out-alt"></i> Logout</div>
-                </div>
-            </div>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="dream-space" aria-label="DreamSpace">
+                        <div class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 3l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" />
+                            </svg>
+                        </div>
+                        DreamSpace
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="soul-safe" aria-label="SoulSafe">
+                        <div class="nav-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 8a7 7 0 0 1 14 0v4a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V8z" />
+                                <path d="M12 16v2m-2-2v2m4-2v2" />
+                            </svg>
+                        </div>
+                        SoulSafe
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-account" id="user-account">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40&q=80"
+                alt="User Profile">
         </div>
 
-        <div class="chat-container" id="chat-messages">
-            <div class="welcome-message" id="empty-chat">
-                <h2>DreamWeaver</h2>
+        <div class="user-dropdown" id="user-dropdown">
+            <a href="#" class="user-dropdown-item" data-tooltip="My account">My account</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Personalize">Personalize</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Notifications">Notifications</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Appearance">Appearance</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Purchases">Purchases</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Settings">Settings</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Voice Support">Voice Support</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Language">Language</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Incognito">Incognito</a>
+            <a href="#" class="user-dropdown-item" data-tooltip="Logout" onclick="handleLogout()">Logout</a>
+        </div>
+    </aside>
+
+    <div class="expanded-menu" id="expanded-menu">
+        <div class="expanded-menu-title">
+            Home
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L14 10L22 12L14 14L12 22L10 14L2 12L10 10L12 2Z" fill="#4CAF50" stroke="#4CAF50" />
+            <path d="M5 3L5.5 5L7 5.5L5.5 6L5 8L4.5 6L3 5.5L4.5 5L5 3Z" fill="#81C784" stroke="#4CAF50" />
+            <path d="M17 16L17.3 17.5L18.5 18L17.3 18.5L17 20L16.7 18.5L15.5 18L16.7 17.5L17 16Z" fill="#81C784"
+                stroke="#4CAF50" />
+        </svg>
+        </div>
+        <ul class="expanded-menu-list" id="chat-list"></ul>
+    </div>
+
+    <div class="right-section" id="dream-space-section">
+        <h2>DreamSpace</h2>
+        <p>Welcome to DreamSpace! This section allows you to visualize your dreams and ideas in a creative way.</p>
+    </div>
+
+    <div class="right-section" id="soul-safe-section">
+        <h2>SoulSafe</h2>
+        <div class="motivation-section">
+            <h3>Emotional Support & Motivation</h3>
+            <p>You are stronger than you think! Every challenge you face is an opportunity to grow and discover your inner resilience. Keep pushing forward—you've got this!</p>
+            <p>Take a moment to breathe deeply. You're doing your best, and that's more than enough. We're here to support you every step of the way.</p>
+            <p>Remember a time when you overcame a tough situation. That same strength is still within you. You are capable of amazing things!</p>
+        </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <div class="logo-text" id="logo-text">DreamWeaver</div>
+        <div class="search-container" id="search-container">
+            <div class="input-container">
+                <input type="text" class="search-input" id="search-input" placeholder="Ask anything..."
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            </div>
+            <div class="search-actions">
+                <div class="search-modes">
+                    <div class="search-mode active">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <path d="M16 13H8" />
+                            <path d="M16 17H8" />
+                            <path d="M10 9H8" />
+                        </svg>
+                    </div>
+                    <div class="search-mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19l-2-2 2-2m0 0H7v-5m5 7l2-2m-2-2l2 2m0-4l2 2 2-2m0 0V7h5m-7 7l-2 2" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="search-tools">
+                    <div class="tool-button" id="file-upload-initial">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M12 1a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V4a3 3 0 0 1 3-3z" />
+                            <path d="M19 10a7 7 0 0 1-14 0" />
+                            <line x1="12" y1="19" x2="12" y2="23" />
+                            <line x1="8" y1="23" x2="16" y2="23" />
+                        </svg>
+                    </div>
+                    <div class="tool-button" id="sparkle-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" />
+                        </svg>
+                    </div>
+                    <div class="submit-button" id="submit-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="example-prompts">
                 <p>How can I help you today? Try one of these examples:</p>
-                <div class="welcome-suggestions">
-                    <div class="welcome-suggestion">Help me interpret my dream about flying</div>
-                    <div class="welcome-suggestion">Suggest some self-care activities</div>
-                    <div class="welcome-suggestion">Tell me a positive affirmation</div>
-                    <div class="welcome-suggestion">Help me remember a happy moment</div>
+                <div class="prompt-buttons">
+                    <button class="prompt-button"
+                        onclick="document.getElementById('search-input').value='Help me interpret my dream about flying'; document.getElementById('submit-button').click();">Help
+                        me interpret my dream about flying</button>
+                    <button class="prompt-button"
+                        onclick="document.getElementById('search-input').value='Suggest some self-care activities'; document.getElementById('submit-button').click();">Suggest
+                        some self-care activities</button>
+                    <button class="prompt-button"
+                        onclick="document.getElementById('search-input').value='Tell me a positive affirmation'; document.getElementById('submit-button').click();">Tell
+                        me a positive affirmation</button>
+                    <button class="prompt-button"
+                        onclick="document.getElementById('search-input').value='Help me remember a happy moment'; document.getElementById('submit-button').click();">Help
+                        me remember a happy moment</button>
                 </div>
-            </div>
-        </div>
-
-        <div class="module-content" id="dream-visualizer">
-            <h2>Dream Visualizer</h2>
-            <p>Transform your dreams into vivid stories, images, videos, and audiobooks with a single click.</p>
-            <div class="dream-visualizer-container">
-                <div class="dream-visualizer-form">
-                    <div class="dream-input-group">
-                        <label for="dream-input">Describe Your Dream or Story</label>
-                        <textarea id="dream-input" placeholder="Enter your dream or story here..." rows="5"></textarea>
-                    </div>
-                    <div class="dream-input-group">
-                        <button id="visualize-dream-btn"><i class="fas fa-magic"></i> Generate Dream Content</button>
-                    </div>
-                </div>
-                <div class="dream-progress" id="dream-progress">
-                    <p>Generating your dream content...</p>
-                    <div class="dream-progress-bar">
-                        <div class="dream-progress-fill" id="progress-fill"></div>
-                    </div>
-                </div>
-                <div id="dream-output" class="dream-output"></div>
-            </div>
-        </div>
-
-        <div class="module-content" id="happy-vault">
-            <h2>Happy Vault</h2>
-            <p>Your collection of joyful memories, beautifully preserved.</p>
-            <div class="happy-vault-container">
-                <div class="happy-moment-form">
-                    <div class="happy-moment-input-group">
-                        <label>Happy Moment</label>
-                        <textarea id="happy-moment" placeholder="Describe your happy moment..." rows="3"></textarea>
-                        <input type="file" id="media" accept="image/*,video/*">
-                        <div class="happy-moment-preview" id="preview"></div>
-                    </div>
-                    <button id="add-happy-moment-btn">Add Happy Moment</button>
-                </div>
-
-                <div class="happy-vault-tabs">
-                    <div class="happy-vault-tab active" data-tab="all">All Moments</div>
-                    <div class="happy-vault-tab" data-tab="chat">Chat Moments</div>
-                    <div class="happy-vault-tab" data-tab="image">Image Moments</div>
-                    <div class="happy-vault-tab" data-tab="video">Video Moments</div>
-                    <div class="happy-vault-tab" data-tab="audio">Audio Moments</div>
-                </div>
-
-                <div id="happy-moments"></div>
-            </div>
-        </div>
-
-        <div class="module-content" id="self-care-tips">
-            <h2>Self-Care Tips</h2>
-            <p>Explore ways to nurture your well-being.</p>
-            <div id="self-care-content"></div>
-        </div>
-
-        <div class="module-content" id="gratitude-journal">
-            <h2>Gratitude Journal</h2>
-            <p>Reflect on what you're thankful for.</p>
-            <div id="gratitude-content"></div>
-        </div>
-
-        <div class="module-content" id="sleep-help">
-            <h2>Sleep Help</h2>
-            <p>Discover tips for better sleep.</p>
-            <div id="sleep-help-content"></div>
-        </div>
-
-        <div class="input-container" id="chat-input">
-            <div class="input-area">
-                <textarea id="user-input" placeholder="Share a dream..." rows="1"></textarea>
-                <input type="file" id="chat-media" accept="image/*,video/*" style="display: none;">
-                <button id="attach-btn"><i class="fas fa-paperclip"></i></button>
-                <button id="mic-btn"><i class="fas fa-microphone"></i></button>
-                <button id="send-btn" disabled><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <script src="js/chatbot.js"></script>
+    <script src="js/ChatUI.js"></script>
 </body>
 </html>

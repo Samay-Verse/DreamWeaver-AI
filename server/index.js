@@ -24,10 +24,20 @@ app.use(passport.initialize());
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Serve intro.html as the default page for the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/loginPage.html'));
+});
+
+// Serve index.html explicitly when accessing /index.html
+app.get('/index.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const dir = './uploads';
+        const dir = './Uploads';
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
         cb(null, dir);
     },
@@ -146,7 +156,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Passport Strategies (unchanged)
+// Passport Strategies
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'YOUR_GOOGLE_CLIENT_SECRET',
@@ -240,19 +250,19 @@ const authenticateJWT = (req, res, next) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', passport.authenticate('google', { session: false }), (req, res) => {
     const token = generateToken(req.user);
-    res.redirect(`http://localhost:3000/chatUI2.html?token=${token}`);
+    res.redirect(`http://localhost:3000/ChatUI.html?token=${token}`);
 });
 
 app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 app.get('/auth/facebook/callback', passport.authenticate('facebook', { session: false }), (req, res) => {
     const token = generateToken(req.user);
-    res.redirect(`http://localhost:3000/chatUI2.html?token=${token}`);
+    res.redirect(`http://localhost:3000/ChatUI.html?token=${token}`);
 });
 
 app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
 app.get('/auth/github/callback', passport.authenticate('github', { session: false }), (req, res) => {
     const token = generateToken(req.user);
-    res.redirect(`http://localhost:3000/chatUI2.html?token=${token}`);
+    res.redirect(`http://localhost:3000/ChatUI.html?token=${token}`);
 });
 
 // JWT Token Generation
@@ -262,13 +272,13 @@ const generateToken = (user) => {
 
 // Initialize Groq client
 const groq = new Groq({
-    apiKey: process.env.GROK_API_KEY || 'your_grok_api_key'
+    apiKey: process.env.GROK_API_KEY || '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'
 });
 
-// Serve static files for uploads (unchanged)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'Uploads')));
 
-// Uplifting videos (unchanged)
+// Uplifting videos
 const upliftingVideos = {
     general: [
         { title: 'You Matter More Than You Think ❤️', url: 'https://youtu.be/nqye02H_H6I' },
@@ -351,15 +361,48 @@ async function getFriendlySupport(input) {
 
 // Chat API
 app.post('/api/emotional-chat', authenticateJWT, async (req, res) => {
-    const { input, chatId } = req.body;
+    const { input, chatId, media } = req.body;
     const userId = req.user.id;
 
     if (!input) return res.status(400).json({ message: 'Input required' });
 
-    try {
-        const response = await getFriendlySupport(input);
-        let chat = chatId ? await Chat.findById(chatId) : null;
+    // Validate chatId
+    if (chatId && !chatId.match(/^[0-9a-fA-F]{24}$/)) {
+        console.warn(`Invalid chatId received: ${chatId}`);
+        return res.status(400).json({ message: 'Invalid chatId format' });
+    }
 
+    try {
+        const video = getUpliftingVideo(input);
+        const systemPrompt = `
+            You're DreamWeaver AI, an emotional support companion. Your role is to:
+            1. Provide empathetic, understanding responses
+            2. Help users explore their feelings
+            3. Offer gentle guidance for emotional wellbeing
+            4. Interpret dreams when asked
+            5. Never give medical advice, but suggest professional help when needed
+            
+            Tone: Warm, compassionate, non-judgmental
+            Style: Conversational but professional
+            Length: 3-5 sentences typically
+            
+            Current time: ${new Date().toLocaleString()}
+            User's last message: ${input}
+        `;
+
+        const response = await groq.chat.completions.create({
+            model: 'llama3-70b-8192',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: input }
+            ],
+            temperature: 0.7,
+            max_tokens: 500
+        });
+
+        const aiResponse = response.choices[0].message.content;
+
+        let chat = chatId ? await Chat.findOne({ _id: chatId, userId }) : null;
         if (!chat) {
             chat = new Chat({
                 userId,
@@ -369,40 +412,44 @@ app.post('/api/emotional-chat', authenticateJWT, async (req, res) => {
         }
 
         chat.messages.push({ sender: 'user', content: input });
-        chat.messages.push({ sender: 'ai', content: response.text });
+        chat.messages.push({ sender: 'ai', content: aiResponse });
+        await chat.save();
 
         const happyInput = await isHappyContent(input);
-        const happyOutput = await isHappyContent(response.text);
+        const happyOutput = await isHappyContent(aiResponse);
         let happyMomentStored = false;
 
         if (happyInput || happyOutput) {
             const happyMoment = new HappyMoment({
                 userId,
-                content: happyInput ? input : response.text,
+                content: happyInput ? input : aiResponse,
                 source: happyInput ? 'User Input' : 'Assistant Response',
-                image: generateImage(happyInput ? input : response.text),
-                video: response.video.url,
-                metadata: { video: response.video }
+                image: media?.image || generateImage(happyInput ? input : aiResponse),
+                video: media?.video || video.url,
+                metadata: { video }
             });
             await happyMoment.save();
             happyMomentStored = true;
         }
 
-        const pastHappyMoments = (input.toLowerCase().includes('sad') || input.toLowerCase().includes('down'))
+        const pastHappyMoments = (input.toLowerCase().includes('sad') || 
+                                input.toLowerCase().includes('down') || 
+                                input.toLowerCase().includes('depressed'))
             ? await HappyMoment.find({ userId }).sort({ date: -1 }).limit(3)
             : [];
 
-        await chat.save();
-
         res.json({
-            response: response.text,
-            chatId: chat._id,
+            response: aiResponse,
+            chatId: chat._id.toString(),
             happyMomentStored,
             pastHappyMoments,
-            video: response.video
+            video
         });
     } catch (err) {
         console.error('Error in /api/emotional-chat:', err);
+        if (err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid chatId format' });
+        }
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -421,6 +468,9 @@ app.get('/api/chats', authenticateJWT, async (req, res) => {
 // Get single chat
 app.get('/api/chats/:id', authenticateJWT, async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: 'Invalid chatId format' });
+        }
         const chat = await Chat.findOne({ _id: req.params.id, userId: req.user.id });
         if (!chat) return res.status(404).json({ message: 'Chat not found' });
         res.json(chat);
@@ -433,6 +483,9 @@ app.get('/api/chats/:id', authenticateJWT, async (req, res) => {
 // Delete chat
 app.delete('/api/chats/:id', authenticateJWT, async (req, res) => {
     try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: 'Invalid chatId format' });
+        }
         await Chat.deleteOne({ _id: req.params.id, userId: req.user.id });
         res.json({ success: true });
     } catch (err) {
